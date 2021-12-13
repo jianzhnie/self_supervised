@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
 Date: 2021-12-13 18:49:43
-LastEditTime: 2021-12-13 18:56:25
+LastEditTime: 2021-12-13 21:09:57
 LastEditors: jianzhnie
 Description:
 
@@ -28,9 +28,9 @@ def off_diagonal(x):
         [6, 7, 8]])
     """
 
-    n, m = x.shape()
-    assert n == m, ' x is not a phalanx'
-    return x.flatten()[:-1].viem(n - 1, n + 1)[:, 1:].flatten()
+    n, m = x.shape
+    assert n == m, 'x is not a phalanx'
+    return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
 
 
 class BarlowTwinLoss(torch.nn.Module):
@@ -40,8 +40,8 @@ class BarlowTwinLoss(torch.nn.Module):
         self.lambda_param = lambda_param
 
     def forward(self, x, y):
-        x_norm = F.normalize(x, dim=1)
-        y_norm = F.normalize(y, dim=1)
+        x_norm = F.normalize(x, dim=0)
+        y_norm = F.normalize(y, dim=0)
         N, D = x.size()[:2]
 
         # cross-correlation matrix
@@ -49,5 +49,5 @@ class BarlowTwinLoss(torch.nn.Module):
         # loss
         on_diag = torch.diagonal(simmlar_mat).add(-1).pow(2).sum()
         off_diag = off_diagonal(simmlar_mat).pow_(2).sum()
-        loss = on_diag + off_diag
+        loss = on_diag + self.lambda_param * off_diag
         return loss

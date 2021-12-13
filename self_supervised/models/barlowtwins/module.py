@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
 Date: 2021-12-13 17:55:41
-LastEditTime: 2021-12-13 18:55:13
+LastEditTime: 2021-12-13 21:12:47
 LastEditors: jianzhnie
 Description:
 
@@ -52,27 +52,26 @@ class BarlowTwinsModel(nn.Module):
                              projector_out_dim)
 
     def forward(self, x):
-        out1 = self.encoder(x)
+        out1 = self.encoder(x)[0]
         out2 = self.projector(out1)
         return out1, out2
 
 
 class BarlowTwins(LightningModule):
-    def __init__(
-        self,
-        num_classes,
-        learning_rate: float = 0.2,
-        weight_decay: float = 1.5e-6,
-        input_height: int = 32,
-        batch_size: int = 32,
-        num_workers: int = 0,
-        warmup_epochs: int = 10,
-        max_epochs: int = 1000,
-        base_encoder: Union[str, torch.nn.Module] = 'resnet50',
-        encoder_out_dim: int = 2048,
-        projector_hidden_size: int = 4096,
-        projector_out_dim: int = 256,
-    ):
+    def __init__(self,
+                 num_classes,
+                 learning_rate: float = 0.2,
+                 weight_decay: float = 1.5e-6,
+                 input_height: int = 32,
+                 batch_size: int = 256,
+                 num_workers: int = 0,
+                 warmup_epochs: int = 10,
+                 max_epochs: int = 1000,
+                 base_encoder: Union[str, torch.nn.Module] = 'resnet50',
+                 encoder_out_dim: int = 2048,
+                 projector_hidden_size: int = 4096,
+                 projector_out_dim: int = 256,
+                 **kwargs):
         super().__init__()
 
         self.save_hyperparameters(ignore='base_encoder')
@@ -83,15 +82,13 @@ class BarlowTwins(LightningModule):
 
     def forward(self, x):
         out1, out2 = self.model(x)
-        return out1
+        return out2
 
     def shared_step(self, batch, batch_idx):
         imgs, y = batch
         img_1, img_2 = imgs[:2]
-
         _, z1 = self.model(img_1)
         _, z2 = self.model(img_2)
-
         loss = self.criterion(z1, z2)
         return loss
 
