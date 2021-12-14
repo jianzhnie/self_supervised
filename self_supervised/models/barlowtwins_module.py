@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
 Date: 2021-12-13 17:55:41
-LastEditTime: 2021-12-14 10:13:42
+LastEditTime: 2021-12-14 15:10:52
 LastEditors: jianzhnie
 Description:
 
@@ -16,7 +16,7 @@ from pl_bolts.utils.self_supervised import torchvision_ssl_encoder
 from pytorch_lightning import LightningModule
 from torch.optim import Adam
 
-from .loss import BarlowTwinLoss
+from self_supervised.losses.barlow_twins_loss import BarlowTwinLoss
 
 
 class MLP(nn.Module):

@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
-Date: 2021-12-13 12:24:51
-LastEditTime: 2021-12-13 16:20:21
+Date: 2021-12-14 15:13:38
+LastEditTime: 2021-12-14 15:16:36
 LastEditors: jianzhnie
 Description:
 
@@ -13,7 +13,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from pl_bolts.utils.self_supervised import torchvision_ssl_encoder
-from torchvision import models
 
 
 class SiameseArm(nn.Module):
@@ -111,11 +110,3 @@ class BYOL(nn.Module):
         y_norm = F.normalize(y, dim=1)  # L2-normalize
         loss = 2 - 2 * (x_norm * y_norm).sum(dim=-1)  # dot product
         return loss.mean()
-
-
-if __name__ == '__main__':
-    base = models.resnet50(pretrained=False)
-    extract_layers = {'layer4': 'feat5'}
-    backbone = models._utils.IntermediateLayerGetter(base, extract_layers)
-    byol = BYOL(backbone)
-    print(byol)
