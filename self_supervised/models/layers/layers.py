@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
 Date: 2021-12-14 15:13:38
-LastEditTime: 2021-12-14 15:16:36
+LastEditTime: 2021-12-14 15:29:53
 LastEditors: jianzhnie
 Description:
 
@@ -13,6 +13,23 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from pl_bolts.utils.self_supervised import torchvision_ssl_encoder
+
+
+class MLP(nn.Module):
+    def __init__(self, input_dim=2048, hidden_size=4096, output_dim=256):
+        super().__init__()
+        self.output_dim = output_dim
+        self.input_dim = input_dim
+        self.model = nn.Sequential(
+            nn.Linear(input_dim, hidden_size, bias=False),
+            nn.BatchNorm1d(hidden_size),
+            nn.ReLU(inplace=True),
+            nn.Linear(hidden_size, output_dim, bias=True),
+        )
+
+    def forward(self, x):
+        x = self.model(x)
+        return x
 
 
 class SiameseArm(nn.Module):
@@ -55,21 +72,31 @@ class ProjectorHead(nn.Module):
         return self.projection(h)
 
 
-class MLP(nn.Module):
-    def __init__(self, input_dim=2048, hidden_size=4096, output_dim=256):
-        super().__init__()
-        self.output_dim = output_dim
-        self.input_dim = input_dim
-        self.model = nn.Sequential(
-            nn.Linear(input_dim, hidden_size, bias=False),
-            nn.BatchNorm1d(hidden_size),
-            nn.ReLU(inplace=True),
-            nn.Linear(hidden_size, output_dim, bias=True),
-        )
+class SwaVPrototypes(nn.Module):
+    """Prototypes used for SwaV.
 
-    def forward(self, x):
-        x = self.model(x)
-        return x
+    Each output feature is assigned to a prototype, SwaV solves the swapped
+    predicition problem where the features of one augmentation are used to
+    predict the assigned prototypes of the other augmentation.
+
+    Examples:
+        >>> # use features with 128 dimensions and 512 prototypes
+        >>> prototypes = SwaVPrototypes(128, 512)
+        >>>
+        >>> # pass batch through backbone and projection head.
+        >>> features = model(x)
+        >>> features = nn.functional.normalize(features, dim=1, p=2)
+        >>>
+        >>> # logits has shape bsz x 512
+        >>> logits = prototypes(features)
+    """
+    def __init__(self, input_dim: int, n_prototypes: int):
+        super().__init__()
+        self.layers = nn.Linear(input_dim, n_prototypes, bias=False)
+
+    def farward(self, x):
+        out = self.layers(x)
+        return out
 
 
 class BYOL(nn.Module):
