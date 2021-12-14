@@ -5,7 +5,6 @@ from pl_bolts.models.self_supervised.simsiam.models import SiameseArm
 from pl_bolts.optimizers.lars import LARS
 from pl_bolts.optimizers.lr_scheduler import linear_warmup_decay
 from pytorch_lightning import LightningModule
-from torch.nn import functional as F
 
 
 class SimSiam(LightningModule):
@@ -151,13 +150,6 @@ class SimSiam(LightningModule):
         loss = -(self.cosine_similarity_(h1, z2).mean() +
                  self.cosine_similarity_(h2, z1).mean()) * 0.5
         return loss
-
-    def cosine_similarity(self, a, b):
-        b = b.detach()  # stop gradient of backbone + projection mlp
-        a = F.normalize(a, dim=-1)
-        b = F.normalize(b, dim=-1)
-        sim = -1 * (a * b).sum(-1).mean()
-        return sim
 
     def shard_step(self, batch, batch_idx):
         (img_1, img_2, _), y = batch
