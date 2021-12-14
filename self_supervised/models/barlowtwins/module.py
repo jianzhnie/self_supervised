@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
 Date: 2021-12-13 17:55:41
-LastEditTime: 2021-12-13 21:12:47
+LastEditTime: 2021-12-14 10:13:42
 LastEditors: jianzhnie
 Description:
 
@@ -61,7 +61,7 @@ class BarlowTwins(LightningModule):
     def __init__(self,
                  num_classes,
                  learning_rate: float = 0.2,
-                 weight_decay: float = 1.5e-6,
+                 weight_decay: float = 1e-6,
                  input_height: int = 32,
                  batch_size: int = 256,
                  num_workers: int = 0,
