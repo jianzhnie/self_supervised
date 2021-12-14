@@ -1,7 +1,7 @@
 '''
 Author: jianzhnie
 Date: 2021-12-13 18:49:43
-LastEditTime: 2021-12-14 10:28:08
+LastEditTime: 2021-12-14 10:58:10
 LastEditors: jianzhnie
 Description:
 
@@ -41,8 +41,8 @@ class BarlowTwinLoss(torch.nn.Module):
         self.lambda_param = lambda_param
 
     def forward(self, x, y):
-        x_norm = F.normalize(x, dim=0)
-        y_norm = F.normalize(y, dim=0)
+        x_norm = F.normalize(x, dim=-1)
+        y_norm = F.normalize(y, dim=-1)
         N, D = x.size()[:2]
 
         # cross-correlation matrix
