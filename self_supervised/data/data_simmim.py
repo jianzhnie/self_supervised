@@ -1,17 +1,11 @@
 '''
 Author: jianzhnie
 Date: 2021-12-14 16:28:22
-LastEditTime: 2021-12-14 16:47:19
+LastEditTime: 2021-12-14 18:35:48
 LastEditors: jianzhnie
 Description:
 
 '''
-# --------------------------------------------------------
-# SimMIM
-# Copyright (c) 2021 Microsoft
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Zhenda Xie
-# --------------------------------------------------------
 
 import numpy as np
 import torch
@@ -48,6 +42,8 @@ class MaskGenerator:
         mask = np.zeros(self.token_count, dtype=int)
         mask[mask_idx] = 1
 
+        # mask shape: 48 * 48
+        # mask shape 和 model_patch_size 一致
         mask = mask.reshape((self.rand_size, self.rand_size))
         mask = mask.repeat(self.scale, axis=0).repeat(self.scale, axis=1)
 
